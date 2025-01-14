@@ -112,7 +112,6 @@ m.setObjective(
     gp.quicksum(n.prob * abs(n.stage - ripe_days[p]) * X[p, n] for p, n in X)
     +\
     gp.quicksum(n.prob * Y[p, n] * num_days for p in P for n in end_nodes)
-    # sum([n.prob for n in N]) *\
 )
 
 """
