@@ -104,14 +104,19 @@ Y = { # Proportion of parcel p left to harvest at end of node n
     for p in P for n in N
 }
 
+Z = {
+    (p, n) : m.addVar(vtype=gp.GRB.BINARY)
+    for p, n in X
+}
+
 """
 Objective Function
 """
 
 m.setObjective(
-    gp.quicksum(n.prob * abs(n.stage - ripe_days[p]) * X[p, n] for p, n in X)
+    gp.quicksum(n.prob * abs(n.stage - ripe_days[p]) * Z[p, n] for p, n in X)
     +\
-    gp.quicksum(n.prob * Y[p, n] * num_days for p in P for n in end_nodes)
+    gp.quicksum(n.prob * Y[p, n] * abs(n.stage + 1 - ripe_days[p]) for p in P for n in end_nodes)
 )
 
 """
@@ -129,32 +134,46 @@ One = {
 
 # Stage to stage constraints
 
-TwoA = {
-    (p, n) : m.addConstr(
-        Y[p, n] == 1 - X[p, n]
-    )
-    for p in P for n in N if n.stage == 1 and not n.rain
-}
+# TwoA = {
+#     (p, n) : m.addConstr(
+#         Y[p, n] == 1 - X[p, n]
+#     )
+#     for p in P for n in N if n.stage == 0 and not n.rain
+# }
 
-TwoB = {
-    (p, n) : m.addConstr(
-        Y[p, n] == 1
+# TwoB = {
+#     (p, n) : m.addConstr(
+#         Y[p, n] == 1
+#     )
+#     for p in P for n in N if n.stage == 0 and n.rain
+# }
+
+Two = {
+    p : m.addConstr(
+        Y[p, root_node] == 1
     )
-    for p in P for n in N if n.stage == 1 and n.rain
+    for p in P
 }
 
 ThreeA = {
     (p, n) : m.addConstr(
         Y[p, n] == Y[p, n.parent] - X[p, n]
     )
-    for p in P for n in N if n.stage > 1 and not n.rain
+    for p in P for n in N if n.stage >= 0 and not n.rain
 }
 
 ThreeB = {
     (p, n) : m.addConstr(
         Y[p, n] == Y[p, n.parent]
     )
-    for p in P for n in N if n.stage > 1 and n.rain
+    for p in P for n in N if n.stage >= 0 and n.rain
+}
+
+SetZ = {
+    (p, n) : m.addConstr(
+        Z[p, n] >= X[p, n]
+    )
+    for p, n in X
 }
 
 m.optimize()
