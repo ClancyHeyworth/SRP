@@ -13,10 +13,10 @@ Sets
 """
 # We will ignore farmer index for now
 
-num_fields = 15
+num_fields = 20
 P = range(num_fields)
 
-num_days = 10
+num_days = 11
 J = range(num_days)
 
 # All possible scenarios of availability
@@ -33,7 +33,7 @@ Data
 # of days were thus the product of each step probability
 random.seed(1)
 
-day_probs = [random.random() for d in J]
+day_probs = [1 - random.random() for d in J]
 w_probs = {
     w : np.prod([day_probs[j] if w[j] == 1 else 1 - day_probs[j] for j in J])
     for w in W
@@ -155,13 +155,6 @@ Seven = {
     )
     for p in P for j in J
 }
-
-# Eight = {
-#     (p, j) : m.addConstr(
-#         X[p, j] <= 1
-#     )
-#     for p in P for j in J
-# }
 
 m.optimize()
     

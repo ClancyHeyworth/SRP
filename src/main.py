@@ -13,7 +13,7 @@ Sets and Data
 """
 
 num_fields = 20
-num_days = 15
+num_days = 10
 cap = 2.0 #Harvest capacity per day of the farmer
 D = range(num_days)
 P = range(num_fields)
