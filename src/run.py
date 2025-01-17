@@ -119,7 +119,9 @@ def run_paper_model(num_fields : int, num_days : int, alpha : float, cap : float
 
     # All possible scenarios of availability
     W = list(itertools.product([0, 1], repeat=num_days))
-    Epsilon = {(j, w) : w[j] for j in J for w in W} # very lazy
+    # W = np.array(np.meshgrid(*[[0, 1]] * num_days)).T.reshape(-1, num_days)
+    
+    Epsilon = {(j, tuple(w)) : w[j] for j in J for w in W} # very lazy
 
     """
     Data
@@ -133,10 +135,12 @@ def run_paper_model(num_fields : int, num_days : int, alpha : float, cap : float
     day_probs = [random.random() for d in J]
 
     w_probs = {
-        w : np.prod([1 - day_probs[j] if w[j] == 1 else day_probs[j] for j in J])
+        tuple(w) : np.prod([1 - day_probs[j] if w[j] == 1 else day_probs[j] for j in J])
         for w in W
     }
 
+    from util import pertinent_filter2
+    # W = pertinent_filter2(W, num_days, np.asarray(day_probs, dtype=np.float64), alpha)
     W = pertinent_filter(W, num_days, w_probs, alpha)
 
     ripe_days = []
@@ -260,6 +264,11 @@ def run_paper_model(num_fields : int, num_days : int, alpha : float, cap : float
     return m.ObjVal
 
 if __name__ == "__main__":
+    import time
     
-    run_node_model(20, 11, 2.0)
+    t1 = time.time()
+    run_paper_model(20, 12, 0.3, 2.0)
+    t2 = time.time()
+    
+    print('Time taken:', t2-t1)
     

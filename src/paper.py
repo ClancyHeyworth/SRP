@@ -7,7 +7,9 @@ import random
 import numpy as np
 import gurobipy as gp
 from tqdm import tqdm
+import time
 
+t1 = time.time()
 """
 Sets
 """
@@ -16,7 +18,7 @@ Sets
 num_fields = 20
 P = range(num_fields)
 
-num_days = 11
+num_days = 12
 J = range(num_days)
 
 # All possible scenarios of availability
@@ -160,3 +162,7 @@ m.optimize()
     
 total_harvested = sum([X[p, j].X for p in P for j in J])
 print('Proportion of fields not harvested:', (num_fields - total_harvested)/num_fields)
+
+t2 = time.time()
+
+print('time taken', t2-t1)
