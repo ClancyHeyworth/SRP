@@ -2,6 +2,7 @@ from tqdm import tqdm
 from collections import defaultdict
 import numpy as np
 import random
+from dataclasses import dataclass
 
 def scenario_greater(w1 : tuple[int], w2 : tuple[int]):
     for i in range(len(w1)):
@@ -9,14 +10,14 @@ def scenario_greater(w1 : tuple[int], w2 : tuple[int]):
             return False
     return True
 
-def pertinent_filter(W : list[tuple[int]], num_days : int, w_probs : dict[tuple[int], float], alpha : float):
+def pertinence_filter(W : list[tuple[int]], num_days : int, w_probs : dict[tuple[int], float], alpha : float):
     INC = set()
     W_s = defaultdict(set)
     
     for w in W:
         W_s[np.sum(w)].add(w)
     
-    for s in tqdm(range(num_days-1, -1, -1)):
+    for s in tqdm(range(num_days-1, -1, -1), desc='Applying Pertinence Filter'):
         for w in W_s[s]:
             comparable = filter(lambda w_dash : scenario_greater(w_dash, w), W)
             
@@ -30,50 +31,6 @@ def pertinent_filter(W : list[tuple[int]], num_days : int, w_probs : dict[tuple[
                         break
                 if no_comparables:
                     INC.add(w)
-
-    return INC
-
-def scenario_greater2(w1: np.ndarray, w2: np.ndarray) -> bool:
-    return np.all(w1 >= w2)
-
-def pertinent_filter2(W : np.ndarray, num_days, day_probs, alpha : float):
-    
-    INC = set()
-    W_s = defaultdict(list)
-    print(np.unique([w.shape for w in W]))
-    for w in W:
-        W_s[np.sum(w)].append(w)
-    
-    for s in tqdm(range(num_days - 1, -1, -1)):
-
-        for w in W_s[s]:
-            conf = 0
-            # comparable = filter(lambda w_dash : scenario_greater(w_dash, w), W)
-            # for w_dash in comparable:
-            #     conf += np.dot(w_dash, day_probs)
-            comparable_mask = np.array([scenario_greater(w_dash, w) for w_dash in W])
-            comparable = W[comparable_mask]
-
-            # Using np.einsum for dot products
-            conf += np.einsum('ij,j->i', comparable, day_probs).sum()
-                # if len(conf) > 15:
-                #     print('\nyoooo')
-                #     print(w_dash.shape, w.shape)
-                #     print(np.unique([w.shape for w in comparable]))
-            try:
-                if conf > 1 - alpha:
-                    no_comparables = True
-                    for w_dash in INC:
-                        if scenario_greater2(w, w_dash) or scenario_greater2(w_dash, w):
-                            no_comparables = False
-                            break
-                    if no_comparables:
-                        INC.add(tuple(w))
-            except:
-                print('conf', conf)
-                print('w', w)
-                print(np.shape(w), np.shape(conf))
-                quit()
 
     return INC
 
@@ -142,3 +99,11 @@ def sample(root_node : Node, num_days : int, children : defaultdict[Node, list[N
         node = children[node][child_index]
         sample.append(node)
     return sample
+
+@dataclass
+class ModelParams:
+    num_fields : int
+    num_days : int
+    cap : float
+    alpha : float
+    verbose : bool = False

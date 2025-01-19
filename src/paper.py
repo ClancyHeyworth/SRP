@@ -18,7 +18,7 @@ Sets
 num_fields = 20
 P = range(num_fields)
 
-num_days = 12
+num_days = 13
 J = range(num_days)
 
 # All possible scenarios of availability
