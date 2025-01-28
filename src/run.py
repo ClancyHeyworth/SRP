@@ -361,6 +361,7 @@ def run_paper_model(params : ModelParams):
     cap = params.cap
     
     W = pertinence_filter(W, len(J), w_probs, alpha)
+    print('Number of scenarios:', len(W))
 
     ripe_days = []
     for p in P:
@@ -516,16 +517,21 @@ def run_paper_model(params : ModelParams):
 if __name__ == "__main__":
     import time
     
-    params = ModelParams(20, 10, 3, 0.99)
-    t1 = time.time()
-    print('Obj:', run_original_paper_model(params))
-    t2 = time.time()
-    print('Time taken:', t2-t1)
+    params = ModelParams(20, 10, 7, 0.2, verbose = True)
+    # t1 = time.time()
+    # print('Obj:', run_original_paper_model(params))
+    # t2 = time.time()
+    # print('Time taken:', t2-t1)
     
-    t1 = time.time()
-    print('Obj:', run_paper_model(params))
-    t2 = time.time()
-    print('Time taken:', t2-t1)
+    # t1 = time.time()
+    # print('Obj:', run_paper_model(params))
+    # t2 = time.time()
+    # print('Time taken:', t2-t1)
+    
+    # t1 = time.time()
+    # print('Obj:', run_original_paper_model(params))
+    # t2 = time.time()
+    # print('Time taken:', t2-t1)
     
     t1 = time.time()
     print('Obj:', run_node_model(params))
