@@ -41,6 +41,8 @@ class Node:
         self.parent = parent
         self.stage = stage
         self.prob = prob
+        self.is_fixed : bool = False
+        self.is_extension : bool = False
     
     def __repr__(self):
         return f"Day {self.stage}, Rain {self.rain}"
@@ -107,3 +109,4 @@ class ModelParams:
     cap : float
     alpha : float
     verbose : bool = False
+    Lambda : float = 0.5

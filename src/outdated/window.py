@@ -237,7 +237,7 @@ def main():
         i : [] for i in range(1, num_days)
     }
         
-    sample_num = 50
+    sample_num = 100
     for j in tqdm(range(sample_num)):
         params = ModelParams(num_fields, num_days, cap, 0.2, verbose = True)
         seed = j
@@ -253,8 +253,9 @@ def main():
             
             similarity_map[i].append(weighted_jaccard(selected, main_window))
 
-    for i in range(1, num_days):
-        print(i, sum(similarity_map[i]) / sample_num)
+    # for i in range(1, num_days):
+    #     print(i, sum(similarity_map[i]) / sample_num)
+    print('[' + ','.join([str(sum(similarity_map[i]) / sample_num) for i in range(1, num_days)]) + ']')
         
 if __name__ == "__main__":
     main()

@@ -227,21 +227,9 @@ def run_cvar(params : ModelParams, seed : int):
             return 1
         return 0
     
-    base_yield = 1
     yield_dec = 0.1
-    yield_inc = 0.1
     yield_rain = 0.15
     lowest_yield = 0.1
-    
-    # def get_yield(p : int, n : Node):
-    #     if n == root_node:
-    #         return base_yield
-    #     else:
-    #         parent_yield = get_yield(p, n.parent)
-    #         change = base_yield * yield_inc * (1 if n.stage <= ripe_days[p] else 0) \
-    #             - yield_dec * (1 if n.stage > ripe_days[p] else 0) - yield_rain * n.rain
-    #         return max(lowest_yield, parent_yield + change)
-        
     max_yield = 1
     def get_yield(p : int, n : Node):
         return max(lowest_yield, max_yield - abs(n.stage - ripe_days[p]) * yield_dec - rain_count(n) * yield_rain)
@@ -403,7 +391,7 @@ def run_cvar(params : ModelParams, seed : int):
 
     print(tabulate(table, headers=headers))
     
-    print('Expected', Lambda * sum([n.prob * Z[n].X for n in Z]))
+    print('Expected', Lambda * sum([n.prob * Beta[n].X for n in end_nodes]))
     print('Cvar', (1 - Lambda) * CVar.X)
     return m.ObjVal
 
